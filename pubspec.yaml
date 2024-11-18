@@ -12,14 +12,14 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  share_plus: ^10.1.2 #Compartir recetas
-  flutter_email_sender: ^6.0.3 # Para enviar recetas por correo
-  provider: ^6.0.0 # Para manejar el estado de la aplicación
+  share_plus: ^10.1.2 
+  flutter_email_sender: ^6.0.3 
+  provider: ^6.0.0 
   image_picker: ^0.8.4+3
-  camera: ^0.10.0  # Verifica la última versión en pub.dev
-  sqflite: ^2.0.0+4 # Para persistencia de datos en SQLite
+  camera: ^0.10.0  
+  sqflite: ^2.0.0+4 
   path_provider: ^2.0.11
-  path: ^1.8.1 # Requerido por sqflite para manejar rutas
+  path: ^1.8.1 
   mailto: ^2.0.0
   url_launcher: ^6.1.9
   shared_preferences: ^2.1.1
