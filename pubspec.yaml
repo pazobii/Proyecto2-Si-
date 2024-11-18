@@ -1,0 +1,57 @@
+name: meow_cafe
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  share_plus: ^10.1.2 #Compartir recetas
+  flutter_email_sender: ^6.0.3 # Para enviar recetas por correo
+  provider: ^6.0.0 # Para manejar el estado de la aplicación
+  image_picker: ^0.8.4+3
+  camera: ^0.10.0  # Verifica la última versión en pub.dev
+  sqflite: ^2.0.0+4 # Para persistencia de datos en SQLite
+  path_provider: ^2.0.11
+  path: ^1.8.1 # Requerido por sqflite para manejar rutas
+  mailto: ^2.0.0
+  url_launcher: ^6.1.9
+  shared_preferences: ^2.1.1
+  
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/splash_logo.png
+    - assets/images/banner.png
+    - assets/images/Affogato.png
+    - assets/images/Americano.png
+    - assets/images/AmericanoFrio.png
+    - assets/images/Capuccino.png
+    - assets/images/Cortado.png
+    - assets/images/Espresso.png
+    - assets/images/FlatWhite.png
+    - assets/images/Latte.png
+    - assets/images/LatteFrio.png
+    - assets/images/Machiatto.png
+    - assets/images/Mocha.png
+    - assets/images/MochaFrio.png
+    - assets/images/profile_picture.png
+    - assets/feedback.json
+    
+ 
+   
+  
