@@ -12,17 +12,19 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  share_plus: ^10.1.2 
   flutter_email_sender: ^6.0.3 
   provider: ^6.0.0 
   image_picker: ^0.8.4+3
   camera: ^0.10.0  
   sqflite: ^2.0.0+4 
-  path_provider: ^2.0.11
+  sqflite_common_ffi_web: ^0.4.5+4
   path: ^1.8.1 
   mailto: ^2.0.0
   url_launcher: ^6.1.9
   shared_preferences: ^2.1.1
+  smooth_page_indicator: ^1.0.0
+  share_plus: ^10.1.2
+  path_provider: ^2.0.11
   
 
 
@@ -50,6 +52,8 @@ flutter:
     - assets/images/Mocha.png
     - assets/images/MochaFrio.png
     - assets/images/profile_picture.png
+    - assets/images/Tiramisu.png
+    - assets/images/muffin.png
     - assets/feedback.json
     
  

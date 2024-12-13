@@ -1,10 +1,16 @@
-import 'dart:async';
+import 'dart:async'; 
 import 'package:flutter/material.dart';
 import 'Pantallas/main_screen.dart';
-import 'Pantallas/splashscreen.dart'; 
+import 'Pantallas/splashscreen.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:sqflite/sqflite.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  databaseFactory = databaseFactoryFfiWeb;
   runApp(MeowCoffeeApp());
+  
 }
 
 class MeowCoffeeApp extends StatelessWidget {
