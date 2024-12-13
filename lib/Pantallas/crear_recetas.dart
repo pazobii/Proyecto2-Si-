@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
@@ -20,8 +19,6 @@ class _CrearRecetasScreenState extends State<CrearRecetasScreen> {
   String? selectedIngredient;
   String selectedCategory = 'Caliente'; // Categoría por defecto
   String? selectedStep;
-  CameraController? _cameraController;
-  XFile? _capturedImage;
 
   List<String> availableIngredients = [
     "Café molido",
@@ -43,20 +40,6 @@ class _CrearRecetasScreenState extends State<CrearRecetasScreen> {
     "Servir en taza",
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _initializeCamera();
-    
-  }
-
-  Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    _cameraController = CameraController(cameras.first, ResolutionPreset.medium);
-    await _cameraController!.initialize();
-    setState(() {});
-  }
-
   void addCustomIngredient(String ingredient) {
     setState(() {
       if (!availableIngredients.contains(ingredient)) {
@@ -75,22 +58,13 @@ class _CrearRecetasScreenState extends State<CrearRecetasScreen> {
     });
   }
 
-  Future<void> _captureImage() async {
-    if (_cameraController != null && _cameraController!.value.isInitialized) {
-      XFile image = await _cameraController!.takePicture();
-      setState(() {
-        _capturedImage = image;
-      });
-    }
-  }
-
   Future<void> _saveRecipe() async {
     widget.onAddRecipe(
       nameController.text,
       selectedCategory,
       selectedIngredients.join(", "),
       preparationSteps.join(", "),
-      _capturedImage?.path ?? 'assets/images/splash_logo.png',
+      'assets/images/splash_logo.png', // Imagen por defecto
     );
 
     final directory = await getApplicationDocumentsDirectory();
@@ -106,7 +80,7 @@ class _CrearRecetasScreenState extends State<CrearRecetasScreen> {
         "category": selectedCategory,
         "ingredients": selectedIngredients.join(", "),
         "preparation": preparationSteps.join(", "),
-        "image": _capturedImage?.path ?? 'assets/images/splash_logo.png'
+        "image": 'assets/images/splash_logo.png'
       };
 
       data.add(newData);
@@ -119,7 +93,7 @@ class _CrearRecetasScreenState extends State<CrearRecetasScreen> {
           "category": selectedCategory,
           "ingredients": selectedIngredients.join(", "),
           "preparation": preparationSteps.join(", "),
-          "image": _capturedImage?.path ?? 'assets/images/splash_logo.png'
+          "image": 'assets/images/splash_logo.png'
         }
       ];
 
@@ -129,29 +103,24 @@ class _CrearRecetasScreenState extends State<CrearRecetasScreen> {
   }
 
   @override
-  void dispose() {
-    _cameraController?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFb1e1a3),
       appBar: AppBar(
         backgroundColor: Color(0xFFFef9c2),
-        title: Text("Crear Nueva Receta"),
+        title: Text(
+          "Crear Nueva Receta",
+          style: TextStyle(color: Color(0xFFfc98a4)),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.info_outline),
+            icon: Icon(Icons.info_outline, color: Color(0xFFfc98a4)),
             onPressed: () {
-              // Lista de pasos para el carrusel
               List<String> createRecipeSteps = [
                 "Ingresa el nombre de la receta.",
                 "Selecciona la categoría: Caliente, Helado o Postre.",
                 "Añade los ingredientes usando la lista o agrega nuevos.",
                 "Especifica los pasos de preparación y personalízalos.",
-                "Toma una foto y guarda la receta.",
               ];
 
               showCarouselDialog(context, "Cómo crear una receta", createRecipeSteps);
@@ -159,224 +128,219 @@ class _CrearRecetasScreenState extends State<CrearRecetasScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(labelText: 'Nombre'),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20), // Espacio superior uniforme
+              Text(
+                "Nombre:",
+                style: TextStyle(fontSize: 16, color: Color(0xFFFef9c2), fontWeight: FontWeight.bold),
+              ),
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'Ingresa el nombre de la receta',
+                  labelStyle: TextStyle(color: Color(0xFFFef9c2)),
                 ),
-                SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Categoría: ",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    DropdownButton<String>(
-                      value: selectedCategory,
-                      items: ['Caliente', 'Helado', 'postres'].map((String category) {
-                        return DropdownMenuItem<String>(
-                          value: category,
-                          child: Text(category),
-                        );
-                      }).toList(),
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedCategory = value!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Ingredientes: ",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    DropdownButton<String>(
-                      value: selectedIngredient,
-                      hint: Text("Selecciona un ingrediente"),
-                      items: availableIngredients.map((String ingredient) {
-                        return DropdownMenuItem<String>(
-                          value: ingredient,
-                          child: Text(ingredient),
-                        );
-                      }).toList(),
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedIngredient = value!;
-                          if (!selectedIngredients.contains(value)) {
-                            selectedIngredients.add(value);
-                          }
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                TextButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        final customIngredientController = TextEditingController();
-                        return AlertDialog(
-                          title: Text("Agregar Ingrediente"),
-                          content: TextField(
-                            controller: customIngredientController,
-                            decoration: InputDecoration(labelText: "Ingrediente"),
+                style: TextStyle(color: Color(0xFFFef9c2)),
+              ),
+              SizedBox(height: 30), // Espaciado uniforme entre secciones
+              Text(
+                "Categoría:",
+                style: TextStyle(fontSize: 16, color: Color(0xFFFef9c2), fontWeight: FontWeight.bold),
+              ),
+              DropdownButton<String>(
+                value: selectedCategory,
+                items: ['Caliente', 'Helado', 'Postres'].map((String category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category, style: TextStyle(color: Color(0xFFFef9c2))),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  setState(() {
+                    selectedCategory = value!;
+                  });
+                },
+                dropdownColor: Color(0xFFfc98a4),
+              ),
+              SizedBox(height: 30),
+              Text(
+                "Ingredientes:",
+                style: TextStyle(fontSize: 16, color: Color(0xFFFef9c2), fontWeight: FontWeight.bold),
+              ),
+              DropdownButton<String>(
+                value: selectedIngredient,
+                hint: Text("Selecciona un ingrediente", style: TextStyle(color: Color(0xFFFef9c2))),
+                items: availableIngredients.map((String ingredient) {
+                  return DropdownMenuItem<String>(
+                    value: ingredient,
+                    child: Text(ingredient, style: TextStyle(color: Color(0xFFFef9c2))),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  setState(() {
+                    selectedIngredient = value!;
+                    if (!selectedIngredients.contains(value)) {
+                      selectedIngredients.add(value);
+                    }
+                  });
+                },
+                dropdownColor: Color(0xFFfc98a4),
+              ),
+              TextButton(
+                onPressed: () {
+                  final customIngredientController = TextEditingController();
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: Color(0xFFfc98a4),
+                        title: Text("Agregar Ingrediente", style: TextStyle(color: Color(0xFFFef9c2))),
+                        content: TextField(
+                          controller: customIngredientController,
+                          decoration: InputDecoration(
+                            labelText: "Ingrediente",
+                            labelStyle: TextStyle(color: Color(0xFFFef9c2)),
                           ),
-                          actions: [
-                            TextButton(
-                              child: Text("Cancelar"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: Text("Agregar"),
-                              onPressed: () {
-                                final ingredient = customIngredientController.text;
-                                if (ingredient.isNotEmpty) {
-                                  addCustomIngredient(ingredient);
-                                }
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  child: Text("Agregar otro ingrediente"),
-                ),
-                Wrap(
-                  spacing: 10,
-                  children: selectedIngredients.map((ingredient) {
-                    return Chip(
-                      label: Text(ingredient),
-                      onDeleted: () {
-                        setState(() {
-                          selectedIngredients.remove(ingredient);
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Preparación: ",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    DropdownButton<String>(
-                      value: selectedStep,
-                      hint: Text("Selecciona un paso"),
-                      items: availableSteps.map((String step) {
-                        return DropdownMenuItem<String>(
-                          value: step,
-                          child: Text(step),
-                        );
-                      }).toList(),
-                      onChanged: (String? value) {
-                        setState(() {
-                          selectedStep = value!;
-                          if (!preparationSteps.contains(value)) {
-                            preparationSteps.add(value);
-                          }
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                TextButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        final customStepController = TextEditingController();
-                        return AlertDialog(
-                          title: Text("Agregar Paso"),
-                          content: TextField(
-                            controller: customStepController,
-                            decoration: InputDecoration(labelText: "Paso"),
+                          style: TextStyle(color: Color(0xFFFef9c2)),
+                        ),
+                        actions: [
+                          TextButton(
+                            child: Text("Cancelar", style: TextStyle(color: Color(0xFFFef9c2))),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
                           ),
-                          actions: [
-                            TextButton(
-                              child: Text("Cancelar"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: Text("Agregar"),
-                              onPressed: () {
-                                final step = customStepController.text;
-                                if (step.isNotEmpty) {
-                                  addCustomStep(step);
-                                }
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  child: Text("Agregar otro paso"),
+                          TextButton(
+                            child: Text("Agregar", style: TextStyle(color: Color(0xFFFef9c2))),
+                            onPressed: () {
+                              final ingredient = customIngredientController.text;
+                              if (ingredient.isNotEmpty) {
+                                addCustomIngredient(ingredient);
+                              }
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Text("Agregar otro ingrediente", style: TextStyle(color: Color(0xFFFef9c2))),
+                style: TextButton.styleFrom(
+                  backgroundColor: Color(0xFFfc98a4),
                 ),
-                Wrap(
-                  spacing: 10,
-                  children: preparationSteps.map((step) {
-                    return Chip(
-                      label: Text(step),
-                      onDeleted: () {
-                        setState(() {
-                          preparationSteps.remove(step);
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 20),
-                _cameraController != null && _cameraController!.value.isInitialized
-                    ? AspectRatio(
-                        aspectRatio: _cameraController!.value.aspectRatio,
-                        child: CameraPreview(_cameraController!),
-                      )
-                    : CircularProgressIndicator(),
-                SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: _captureImage,
-                  child: Text('Tomar Foto'),
-                ),
-                _capturedImage != null
-                    ? Image.file(
-                        File(_capturedImage!.path),
-                        width: 100,
-                        height: 100,
-                      )
-                    : Container(),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _saveRecipe,
-                  style: ElevatedButton.styleFrom(
+              ),
+              Wrap(
+                spacing: 10,
+                children: selectedIngredients.map((ingredient) {
+                  return Chip(
+                    label: Text(ingredient, style: TextStyle(color: Color(0xFFFef9c2))),
                     backgroundColor: Color(0xFFfc98a4),
-                  ),
-                  child: Text('Guardar Receta'),
+                    onDeleted: () {
+                      setState(() {
+                        selectedIngredients.remove(ingredient);
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+              SizedBox(height: 30),
+              Text(
+                "Preparación:",
+                style: TextStyle(fontSize: 16, color: Color(0xFFFef9c2), fontWeight: FontWeight.bold),
+              ),
+              DropdownButton<String>(
+                value: selectedStep,
+                hint: Text("Selecciona un paso", style: TextStyle(color: Color(0xFFFef9c2))),
+                items: availableSteps.map((String step) {
+                  return DropdownMenuItem<String>(
+                    value: step,
+                    child: Text(step, style: TextStyle(color: Color(0xFFFef9c2))),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  setState(() {
+                    selectedStep = value!;
+                    if (!preparationSteps.contains(value)) {
+                      preparationSteps.add(value);
+                    }
+                  });
+                },
+                dropdownColor: Color(0xFFfc98a4),
+              ),
+              TextButton(
+                onPressed: () {
+                  final customStepController = TextEditingController();
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        backgroundColor: Color(0xFFfc98a4),
+                        title: Text("Agregar Paso", style: TextStyle(color: Color(0xFFFef9c2))),
+                        content: TextField(
+                          controller: customStepController,
+                          decoration: InputDecoration(
+                            labelText: "Paso",
+                            labelStyle: TextStyle(color: Color(0xFFFef9c2)),
+                          ),
+                          style: TextStyle(color: Color(0xFFFef9c2)),
+                        ),
+                        actions: [
+                          TextButton(
+                            child: Text("Cancelar", style: TextStyle(color: Color(0xFFFef9c2))),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text("Agregar", style: TextStyle(color: Color(0xFFFef9c2))),
+                            onPressed: () {
+                              final step = customStepController.text;
+                              if (step.isNotEmpty) {
+                                addCustomStep(step);
+                              }
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Text("Agregar otro paso", style: TextStyle(color: Color(0xFFFef9c2))),
+                style: TextButton.styleFrom(
+                  backgroundColor: Color(0xFFfc98a4),
                 ),
-              ],
-            ),
+              ),
+              Wrap(
+                spacing: 10,
+                children: preparationSteps.map((step) {
+                  return Chip(
+                    label: Text(step, style: TextStyle(color: Color(0xFFFef9c2))),
+                    backgroundColor: Color(0xFFfc98a4),
+                    onDeleted: () {
+                      setState(() {
+                        preparationSteps.remove(step);
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _saveRecipe,
+                child: Text('Guardar Receta', style: TextStyle(color: Color(0xFFFef9c2))),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFfc98a4),
+                ),
+              ),
+              SizedBox(height: 30), // Espaciado inferior
+            ],
           ),
         ),
       ),
