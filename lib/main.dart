@@ -8,7 +8,7 @@ import 'package:sqflite/sqflite.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  databaseFactory = databaseFactoryFfiWeb;
+  databaseFactory = databaseFactoryFfiWeb; 
   runApp(MeowCoffeeApp());
   
 }

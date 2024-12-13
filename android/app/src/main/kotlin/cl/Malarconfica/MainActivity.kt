@@ -1,4 +1,4 @@
-package com.example.meow_cafe
+package cl.Malarconfica
 
 import io.flutter.embedding.android.FlutterActivity
 

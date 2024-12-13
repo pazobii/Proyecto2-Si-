@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.tu_app"> <!-- Reemplaza con el nombre de tu paquete -->
+    package="cl.Malarconfica">
 
     <uses-permission android:name="android.permission.CAMERA"/>
   
